@@ -24,34 +24,39 @@ if(isset($config['sms']))
 
 <body>
 <?Php
-if(!isset($_SESSION[$config['dc']]['username']))
+if(!isset($login['username']))
 {
 	if(isset($_POST['submit']))
 	{
-		$return=$adtools->connect_and_bind($config['dc'],$_POST['username'].'@'.$config['upn_suffix'],$_POST['password'],true);
-
-		if($return===false)
-		{
-			echo "<p>Kunne ikke koble til AD: {$adtools->error}</p>";
-		}
-		else
-		{
-			$_SESSION[$config['dc']]['username']=$_POST['username'];
-			$_SESSION[$config['dc']]['password']=$_POST['password'];
-		}
+		$username=$_SESSION[$config['dc']]['username']=$_POST['username'];
+		$password=$_SESSION[$config['dc']]['password']=$_POST['password'];
+	}
+	elseif(isset($_SESSION[$config['dc']]))
+	{
+		$username=$_SESSION[$config['dc']]['username'];
+		$password=$_SESSION[$config['dc']]['password'];
 	}
 	else
 	{
-		echo "<p>Logg p&aring; med en bruker som har tilgang til &aring; endre passord</p>\n";
+		echo "<p>Logg p&aring; med en bruker som har tilgang til &aring; endre passord i {$config['upn_suffix']}</p>\n";
 		echo $adtools->login_form();
+	}
+	if(isset($username) && isset($password))
+	{
+		$return=$adtools->connect_and_bind($config['dc'],$username.'@'.$config['upn_suffix'],$password,true);
+		if($return===false)
+		{
+			unset($_SESSION[$config['dc']]);
+			echo "<p>Kunne ikke koble til AD: {$adtools->error}</p>";
+		}
 	}
 }
 
-if(isset($_SESSION[$config['dc']]['username']))
+if(isset($username))
 {
 ?>
 
-<p><?php printf('Du er logget p&aring som %s og tilkoblet %s',$_SESSION[$config['dc']]['username'],$config['dc']); ?>
+	<p><?php printf('Du er logget p&aring som %s og tilkoblet %s',$username,$config['dc']);?></p>
 <form id="form1" name="form1" method="post">
   <p>
     <label for="username">Brukernavn:</label>
@@ -80,7 +85,6 @@ $passwords=array('Skorpion','Flaggermus','Edderkopp','Grevling','Moskus','Leopar
 
 if(isset($_POST['submit_password']))
 {
-	$return=$adtools->connect_and_bind('admindc01.as-admin.no',$_SESSION['username'].'@as-admin.no',$_SESSION['password'],true);
 	//$user=$adtools->find_object($_POST['username'],$adtools->dn,'username');
 	//$random=true;
 	
