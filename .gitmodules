@@ -1,0 +1,3 @@
+[submodule "adtools"]
+	path = adtools
+	url = git@github.com:datagutten/adtools.git
