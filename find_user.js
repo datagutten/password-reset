@@ -1,11 +1,11 @@
 "use strict";
-var xmlhttp = new XMLHttpRequest();
+const xmlhttp = new XMLHttpRequest();
 
 function mobile(username)
 {
 	xmlhttp.abort();
-	var sms_checkbox=document.getElementById('sms');
-	var displayname_text=document.getElementById('displayname_text');
+	const sms_checkbox=document.getElementById('sms');
+	const displayname_text=document.getElementById('displayname_text');
 	console.log(displayname_text);
 	if(username.length>2)
 	{
@@ -51,7 +51,7 @@ function mobile(username)
 					}
 				}
 			}
-		}
+		};
 		xmlhttp.open("GET", "find_user.php?username=" + username, true);
 		displayname_text.textContent='Henter informasjon om bruker, vennligst vent...';
 		xmlhttp.send();
