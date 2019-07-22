@@ -1,0 +1,18 @@
+{
+    "name": "datagutten/ad-password-reset",
+    "description": "A web interface to reset AD passwords",
+    "type": "project",
+    "require": {
+        "datagutten/adtools": "^1.4",
+        "datagutten/logger": "^1.0",
+        "ext-json": "*",
+        "datagutten/sms-gateway-client": "^1.1"
+    },
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "datagutten",
+            "email": "datagutten@datagutten.net"
+        }
+    ]
+}
