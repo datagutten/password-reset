@@ -120,9 +120,11 @@ if(isset($_POST['submit_password']))
 	}
 	else
 		$password=$passwords[mt_rand(0,count($passwords)-1)].mt_rand(100,999); //Lag tilfeldig passord med ordliste og tall
-	
-	if($adtools->change_passord($_POST['dn'],$password)!==false) //Endre passordet
-	{
+
+    try
+    {
+        $adtools->change_password($_POST['dn'],$password);
+
 		//Skriv fil til brukerens hjemmeområde som trigger script for å be brukeren lage nytt passord
 		if(isset($config['password_change_dir']))
 			file_put_contents(sprintf('%s/%s.txt',$config['password_change_dir'],$_POST['username']),'web_'.date('c'));
@@ -145,9 +147,9 @@ if(isset($_POST['submit_password']))
 		else
 			echo sprintf('Passordet for %s er satt til %s<br />(DN: %s)',$_POST['username'],$password,$_POST['dn']);
 	}
-	else
+	catch (LdapException $e)
 	{
-		echo "<p>Det oppstod en feil ved endring av passord</p>";
+		printf("<p>Det oppstod en feil ved endring av passord: %s</p>", $e->getMessage());
 	}
 }
 echo '<p><a href="?logout">Logg ut</a></p>';
