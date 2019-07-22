@@ -106,6 +106,10 @@ if(isset($_POST['submit_password']))
 
     try
     {
+        $adtools->connect_and_bind(null,
+            $_SESSION['reset']['username'].'@'.$adtools->config['domain'],
+            $_SESSION['reset']['password']);
+
         $adtools->change_password($_POST['dn'],$password);
 
 		//Skriv fil til brukerens hjemmeområde som trigger script for å be brukeren lage nytt passord
@@ -127,7 +131,7 @@ if(isset($_POST['submit_password']))
 		}
         echo sprintf('Passordet for %s er satt til %s<br />(DN: %s)',$_POST['username'],$password,$_POST['dn']);
 	}
-	catch (LdapException $e)
+	catch (Exception $e)
 	{
 		printf("<p>Det oppstod en feil ved endring av passord: %s</p>", $e->getMessage());
 	}
