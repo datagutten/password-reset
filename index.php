@@ -38,17 +38,20 @@ if(!isset($_SESSION['reset']['username']))
 {
 	if(isset($_POST['submit']))
 	{
-		$username=$_SESSION[$config['dc']]['username']=$_POST['username'];
-		$password=$_SESSION[$config['dc']]['password']=$_POST['password'];
-	}
-	elseif(isset($_SESSION[$config['dc']]))
-	{
-		$username=$_SESSION[$config['dc']]['username'];
-		$password=$_SESSION[$config['dc']]['password'];
+		try
+		{
+            $adtools->connect_and_bind(null,$_POST['username'].'@'.$adtools->config['domain'],$_POST['password']);
+			$_SESSION['reset']['username']=$_POST['username'];
+			$_SESSION['reset']['password']=$_POST['password'];
+		}
+		catch (Exception $e)
+        {
+            echo "<p>Kunne ikke koble til AD: {$e->getMessage()}</p>";
+        }
 	}
 	else
 	{
-		echo "<p>Logg p&aring; med en bruker som har tilgang til &aring; endre passord i {$config['upn_suffix']}</p>\n";
+		echo "<p>Logg p&aring; med en bruker som har tilgang til &aring; endre passord i {$adtools->config['domain']}</p>\n";
 		echo $adtools->login_form();
 	}
 	if(isset($username) && isset($password))
