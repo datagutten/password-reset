@@ -6,20 +6,12 @@ if(isset($_GET['logout']))
 	session_destroy();
 	header('Location: '.basename(__FILE__));
 }
-require 'config.php';
-require 'adtools/adtools.class.php';
-$adtools=new adtools;
 ?>
 <!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>Tilbakestill passord</title>
-<?php
-if(isset($config['sms']))
-	require '../sms/sms.php';
-?>
-
 <script type="text/javascript" src="find_user.js"></script></head>
 
 <body>
@@ -61,22 +53,13 @@ if(!isset($_SESSION['reset']['username']))
 		echo "<p>Logg p&aring; med en bruker som har tilgang til &aring; endre passord i {$adtools->config['domain']}</p>\n";
 		echo $adtools->login_form();
 	}
-	if(isset($username) && isset($password))
-	{
-		$return=$adtools->connect_and_bind($config['dc'],$username.'@'.$config['upn_suffix'],$password,true);
-		if($return===false)
-		{
-			unset($_SESSION[$config['dc']]);
-			echo "<p>Kunne ikke koble til AD: {$adtools->error}</p>";
-		}
-	}
 }
 
-if(isset($username))
+if(isset($_SESSION['reset']['username']))
 {
 ?>
 
-	<p><?php printf('Du er logget p&aring som %s og tilkoblet %s',$username,$config['dc']);?></p>
+<p><?php printf('Du er logget p&aring som %s og tilkoblet %s',$_SESSION['reset']['username'],$adtools->config['dc']); ?>
 <form id="form1" name="form1" method="post">
   <p>
     <label for="username">Brukernavn:</label>
@@ -142,10 +125,7 @@ if(isset($_POST['submit_password']))
                 printf('Feil ved sending av SMS: %s' % $e->getMessage());
             }
 		}
-		if(isset($_GET['nybruker']))
-			echo sprintf('Bruker for %s er opprettet med brukernavn %s og førstegangspassord %s',$_POST['displayname'],$_POST['username'],$password);
-		else
-			echo sprintf('Passordet for %s er satt til %s<br />(DN: %s)',$_POST['username'],$password,$_POST['dn']);
+        echo sprintf('Passordet for %s er satt til %s<br />(DN: %s)',$_POST['username'],$password,$_POST['dn']);
 	}
 	catch (LdapException $e)
 	{
