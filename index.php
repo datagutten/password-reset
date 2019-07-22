@@ -24,7 +24,17 @@ if(isset($config['sms']))
 
 <body>
 <?Php
-if(!isset($login['username']))
+require 'vendor/autoload.php';
+try {
+    $adtools = new adtools('reset');
+} catch (Exception $e)
+{
+    die($e->getMessage());
+}
+
+$config = require 'config.php';
+
+if(!isset($_SESSION['reset']['username']))
 {
 	if(isset($_POST['submit']))
 	{
