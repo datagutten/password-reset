@@ -2,7 +2,7 @@
 session_start();
 if(empty($_SESSION['reset']))
     die(json_encode(array('error'=>'Not logged in')));
-require 'adtools/adtools.class.php';
+require 'vendor/autoload.php';
 
 try
 {
@@ -17,7 +17,7 @@ try
     {
         if(!isset($user['mobile']))
             $user['mobile'][0]='';
-        $pwdlastset_timestamp=$ad_tools->microsoft_timestamp_to_unix($user['pwdlastset'][0]);
+        $pwdlastset_timestamp=adtools_utils::microsoft_timestamp_to_unix($user['pwdlastset'][0]);
         $pwdlastset=date('Y-m-d H:i',$pwdlastset_timestamp);
         $diff=time()-$pwdlastset_timestamp;
         $diff_days=$diff/(3600*24);
