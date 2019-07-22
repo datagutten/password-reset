@@ -25,6 +25,9 @@ if(isset($config['sms']))
 <body>
 <?Php
 require 'vendor/autoload.php';
+
+use datagutten\sms;
+
 try {
     $adtools = new adtools('reset');
 } catch (Exception $e)
@@ -33,6 +36,10 @@ try {
 }
 
 $config = require 'config.php';
+if(isset($config['sms_gateway']))
+{
+    $sms=new sms\sms($config['sms_gateway'], 'password-web');
+}
 
 if(!isset($_SESSION['reset']['username']))
 {
@@ -78,7 +85,7 @@ if(isset($username))
   <p id="displayname_text"></p>
   <p id="pwdlastset"></p>
   <?php
- if(isset($config['sms']))
+ if(isset($config['sms_gateway']))
  {
 ?>
   <p>
@@ -122,9 +129,16 @@ if(isset($_POST['submit_password']))
 
 		if(!empty($_POST['sms']))
 		{
-			echo sprintf('<p>Passordet er sendt på SMS til %s</p>',$_POST['sms']);
-			$message=sprintf("Hei %s\nDin bruker %s har fått passord %s\nGi beskjed til IT umiddelbart på telefon 64962020 hvis ditt navn ikke stemmer",$_POST['displayname'],$_POST['username'],$password);
-			sms($_POST['sms'],$message,'password_web');	//Send melding med nytt passord
+		    try {
+                $message=sprintf("Hei %s\nDin bruker %s har fått passord %s\nGi beskjed til IT umiddelbart på telefon 64962020 hvis ditt navn ikke stemmer",
+                    $_POST['displayname'],$_POST['username'],$password);
+                $sms->send($_POST['sms'], $message);
+                echo sprintf('<p>Passordet er sendt på SMS til %s</p>',$_POST['sms']);
+            }
+            catch (sms\Exception $e)
+            {
+                printf('Feil ved sending av SMS: %s' % $e->getMessage());
+            }
 		}
 		if(isset($_GET['nybruker']))
 			echo sprintf('Bruker for %s er opprettet med brukernavn %s og førstegangspassord %s',$_POST['displayname'],$_POST['username'],$password);
